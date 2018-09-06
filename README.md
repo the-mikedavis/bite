@@ -1,6 +1,16 @@
 # Bite
 
-**TODO: Add description**
+Bite allows you to deal with byte data in a very comfortable and succinct way.
+For example, here's how you'd deal with the 4 byte pattern `b0 00 00 00` in
+little endian hexadecimal:
+
+```elixir
+iex> import Bite
+iex> ~b(b0 00 00 00)hl
+~b(b0 00 00 00)hl
+iex> ~b(b0 00 00 00) |> Bite.to_integer()
+176
+```
 
 ## Installation
 
