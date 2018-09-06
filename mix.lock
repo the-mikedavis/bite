@@ -1,0 +1,3 @@
+%{
+  "private": {:hex, :private, "0.1.1", "6227bd343bebd843e62d7bc4dba8fe970aeb0f567a33cf4249b93ef6319fa90f", [:mix], [], "hexpm"},
+}
