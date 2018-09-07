@@ -8,11 +8,16 @@ defmodule Bite do
 
   # hexadecimal
   defmacro sigil_b({:<<>>, _, [binary]}, opts) do
+    binary
+    |> consume(opts)
+    |> Macro.escape()
+  end
+
+  def consume(binary, flags \\ []) do
     (opts -- @controls)
     |> parse(binary)
-    |> restore_source(binary, opts)
-    |> give_endian(opts)
-    |> Macro.escape()
+    |> restore_source(binary, flags)
+    |> give_endian(flags)
   end
 
   def to_integer(%Bite{endian: :little} = bite) do
@@ -46,7 +51,28 @@ defmodule Bite do
     |> to_string()
   end
 
+  @doc """
+  Drop `n` bytes from a binary. Results in a binary. Tail recursive.
+  """
+  def drop(binary, n)
+  def drop(<<>>, _n), do: <<>>
+  def drop(binary, 0), do: binary
+  def drop(<<_h :: size(8), t :: binary>>, n), do: drop(t, n - 1)
+
+  @doc """
+  Take `n` bytes from a binary. Results in a ~b() sigil. Not tail recursive.
+  """
+  def take(binary, n, opts \\ []) when is_binary(binary) do
+    take = _take(binary, n)
+
+    consume(take, opts)
+  end
+
   private do
+    defp _take(<<>>, _n), do: <<>>
+    defp _take(_binary, 0), do: <<>>
+    defp _take(<<h :: size(8), t :: binary>>, n), do: <<h>> <> _take(t, n - 1)
+
     defp to_base_10(%Bite{bytes: data, base: base} = bite) do
       base_ten_bytes =
         data
@@ -64,6 +90,14 @@ defmodule Bite do
 
         Regex.match?(~r(\\\d{3}), binary) ->
           %Bite{bytes: String.split(binary, "\\", trim: true), base: 16}
+
+        String.valid?(binary) ->
+          %Bite{bytes: String.split(binary, "", trim: true), base: 16}
+
+        true ->
+          bytes = chunk(binary)
+
+          %Bite{bytes: bytes, base: 16, source: "\\" <> Enum.join(bytes, "\\")}
       end
     end
 
@@ -76,13 +110,20 @@ defmodule Bite do
     end
   end
 
-  defp restore_source(%Bite{} = bite, binary, opts) do
+  defp restore_source(%Bite{source: <<>>} = bite, binary, opts) do
     %Bite{bite | source: binary, opts: opts}
+  end
+  defp restore_source(%Bite{} = bite, _binary, opts) do
+    %Bite{bite | opts: opts}
   end
 
   defp to_big_endian(%Bite{endian: :big} = bite), do: bite
   defp to_big_endian(%Bite{endian: :little, bytes: data} = bite) do
     %Bite{bite | endian: :big, bytes: Enum.reverse(data)}
+  end
+
+  defp chunk(binary) do
+    for <<chunk  :: size(8) <- binary>>, do: chunk
   end
 end
 
