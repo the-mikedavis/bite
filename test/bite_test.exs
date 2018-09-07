@@ -1,8 +1,5 @@
 defmodule BiteTest do
   use ExUnit.Case
+  import Bite, only: [sigil_b: 2]
   doctest Bite
-
-  test "the truth" do
-    assert true == true
-  end
 end
