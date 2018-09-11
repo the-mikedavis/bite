@@ -200,6 +200,12 @@ defmodule Bite do
       end
     end
 
+    defp parse([], binary) do
+      bytes = chunk(binary)
+
+      %Bite{bytes: bytes, base: 10, source: "\\" <> Enum.join(bytes, "\\")}
+    end
+
     defp give_endian(%Bite{} = bite, opts) do
       if ?l in opts do
         %Bite{bite | endian: :little}
