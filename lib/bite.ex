@@ -166,6 +166,30 @@ defmodule Bite do
     consume(take, opts)
   end
 
+  @doc "Create a byte from an integer"
+  def from_integer(n, acc \\ <<>>)
+  def from_integer(0, acc), do: acc
+  def from_integer(n, acc) when is_integer(n) do
+    case Integer.floor_div(n, 256) do
+      0 -> acc <> <<Integer.mod(n, 256) :: size(8)>>
+      m -> from_integer(n - (256 * m), acc <> <<m :: size(8)>>)
+    end
+  end
+
+  @doc "Pad a binary until it's length matches `n`"
+  def pad_length(bytes, n, pad \\ <<0>>)
+  def pad_length(bytes, n, pad) when is_binary(bytes) do
+    case String.length(bytes) do
+      m when m < n -> pad_length(pad <> bytes, n, pad)
+      _ -> bytes
+    end
+  end
+
+  @doc "Reverse a binary"
+  def reverse(bytes, acc \\ <<>>)
+  def reverse(<<>>, acc), do: acc
+  def reverse(<<h :: size(8), t::binary>>, acc), do: reverse(t, <<h>> <> acc)
+
   private do
     @spec _take(binary(), integer()) :: binary()
     defp _take(<<>>, _n), do: <<>>
