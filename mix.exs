@@ -17,7 +17,8 @@ defmodule Bite.MixProject do
         bless: :test
       ],
       test_coverage: [tool: ExCoveralls],
-      aliases: aliases()
+      aliases: aliases(),
+      package: package()
     ]
   end
 
@@ -32,7 +33,17 @@ defmodule Bite.MixProject do
       {:private, "~> 0.1.1"},
       {:excoveralls, "~> 0.7", only: :test},
       {:credo, "~> 0.9", only: :test, runtime: false},
-      {:dialyxir, "~> 0.5", only: [:dev, :test], runtime: false}
+      {:dialyxir, "~> 0.5", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.19.1", only: [:dev, :test], runtime: false}
+    ]
+  end
+
+  defp package do
+    [
+      name: "bite",
+      files: ~w(lib README.md .formatter.exs LICENSE),
+      licenses: ["BSD3"],
+      links: %{"GitHub" => "https://github.com/the-mikedavis/bite.git"}
     ]
   end
 
