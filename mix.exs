@@ -6,7 +6,7 @@ defmodule Bite.MixProject do
       app: :bite,
       name: "Bite",
       description: "A byte-wise convenience library.",
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -41,7 +41,7 @@ defmodule Bite.MixProject do
   defp package do
     [
       name: "bite",
-      files: ~w(lib README.md .formatter.exs LICENSE),
+      files: ~w(lib README.md mix.exs .formatter.exs LICENSE),
       licenses: ["BSD3"],
       links: %{"GitHub" => "https://github.com/the-mikedavis/bite.git"}
     ]
